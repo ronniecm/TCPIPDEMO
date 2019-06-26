@@ -20,23 +20,33 @@ public class Server {
 		Socket user2 = server.accept();
 		System.out.println("User 2 connected from: " + user2.getInetAddress().toString());
 		String dataFromUser2 = null;
-		
-		BufferedReader fromUser1 = new BufferedReader(new InputStreamReader(user1.getInputStream()));
-		BufferedReader fromUser2 = new BufferedReader(new InputStreamReader(user2.getInputStream()));
-		PrintWriter toUser1 = new PrintWriter(user1.getOutputStream());
-		PrintWriter toUser2 = new PrintWriter(user2.getOutputStream());
-		while(true) {
-			if(fromUser1.ready())
-			{
-				toUser2.println(fromUser1.readLine());
-				toUser2.flush();
+
+		Runnable r = new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					BufferedReader fromUser1 = new BufferedReader(new InputStreamReader(user1.getInputStream()));
+					BufferedReader fromUser2 = new BufferedReader(new InputStreamReader(user2.getInputStream()));
+					PrintWriter toUser1 = new PrintWriter(user1.getOutputStream());
+					PrintWriter toUser2 = new PrintWriter(user2.getOutputStream());
+					while (true) {
+						if (fromUser1.ready()) {
+							toUser2.println(fromUser1.readLine());
+							toUser2.flush();
+						}
+
+						if (fromUser2.ready()) {
+							toUser1.println(fromUser2.readLine());
+							toUser1.flush();
+						}
+					}
+				} catch (Exception e) {
+					e.getStackTrace();
+				}
 			}
-			
-			if(fromUser2.ready()) {
-				toUser1.println(fromUser2.readLine());
-				toUser1.flush();
-			}
-		}
+		};
+		new Thread(r).start();
 	}
 
 	public InetAddress getSocketAddress() {
@@ -46,13 +56,12 @@ public class Server {
 	public int getLocalPort() {
 		return server.getLocalPort();
 	}
-	
+
 	public static void main(String[] args) throws Exception {
-        Server app = new Server(args[0]);
-        System.out.println("\r\nRunning Server: " + 
-                "Host=" + app.getSocketAddress().getHostAddress() + 
-                " Port=" + app.getLocalPort());
-        
-        app.listen();
-    }
+		Server app = new Server(args[0]);
+		System.out.println("\r\nRunning Server: " + "Host=" + app.getSocketAddress().getHostAddress() + " Port="
+				+ app.getLocalPort());
+
+		app.listen();
+	}
 }
