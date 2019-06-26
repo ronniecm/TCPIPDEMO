@@ -16,10 +16,9 @@ public class Server {
 
 	private void listen() throws IOException {
 		Socket user1 = server.accept();
-		System.out.println("User 1 connected from: " + user1.getLocalAddress().toString());
-		String dataFromUser1 = null;
+		System.out.println("User 1 connected from: " + user1.getInetAddress().toString());
 		Socket user2 = server.accept();
-		System.out.println("User 2 connected from: " + user2.getLocalAddress().toString());
+		System.out.println("User 2 connected from: " + user2.getInetAddress().toString());
 		String dataFromUser2 = null;
 		
 		BufferedReader fromUser1 = new BufferedReader(new InputStreamReader(user1.getInputStream()));
