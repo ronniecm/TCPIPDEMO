@@ -18,11 +18,23 @@ public class Client {
 	}
 
 	public void start() throws IOException {
+		Runnable r = new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					if (br.ready())
+						System.out.println("From other user: " + br.readLine());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+		};
+		new Thread(r).start();
 		String input;
 		while (true) {
-			if (br.ready())
-				System.out.println("From other user: " + br.readLine());
-			
 			input = sc.nextLine();
 			if (!input.equals("")) {
 				out.println(input);
